@@ -80,10 +80,10 @@ class KVP {
 		$this->define( 'KVP_PATH', 		$path );
 		
 		// Include utility functions.
+		include_once( KVP_PATH . 'includes/kvp-custompost-type-class.php');
 		if( is_admin() ) {
 			include_once( KVP_PATH . 'includes/kv-removedefault-class.php');
 			include_once( KVP_PATH . 'includes/kv-admin-functions.php');
-			include_once( KVP_PATH . 'includes/kvp-custompost-type-class.php');
 			
 		}
 		
@@ -119,21 +119,16 @@ function kvp() {
 }
 // initialize
 kvp();
+endif; // class_exists check
 
-// add_action( 'rest_api_init', 'wpshout_register_routesss' ); 
-function wpshout_register_routesss() {
-    register_rest_route( 
-        'myplugin/v1',
-        '/author',
-        array(
-            'methods' => 'GET',
-            'callback' => 'wpshout_find_author_post_title',
-        )
-    );
+add_action( 'init', 'my_book_cpt' );
+function my_book_cpt() {
+    $args = array(
+      'public'       => true,
+      'show_in_rest' => true,
+      'label'        => 'Books'
+	);
+register_post_type( 'book', $args );
 }
 
-
-
-
-endif; // class_exists check
 ?>
