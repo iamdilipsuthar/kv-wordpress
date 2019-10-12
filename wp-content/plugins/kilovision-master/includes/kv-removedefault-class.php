@@ -12,12 +12,29 @@ class kvp_admin {
 
 		add_action('admin_menu', 			array($this, 'kvp_admin_menu'));
 		add_action( 'admin_init', array( $this, 'kv_options_init' ) );
+		
+		add_action( 'login_enqueue_scripts', array( $this, 'kv_change_admin_logo' ) );
+		add_action( 'login_headerurl', array( $this, 'kv_change_admin_logo_url' ),1,10 );
+		
 	}
-    
+	function kv_change_admin_logo_url($url){
+		return site_url();
+	}
+    function kv_change_admin_logo(){
+		$logopath = KVP_URL . 'assets/kilo.jpg';
+		?>
+		<style type="text/css"> 
+			body.login div#login h1 a {
+			background-image: url(<?php echo $logopath; ?>);  //Add your own logo image in this url 
+			padding-bottom: 30px; 
+			} 
+		</style>
+		<?php
+	}
 	function kvp_admin_menu() {
 
-		remove_menu_page('edit.php');
-		remove_menu_page('edit.php?post_type=page');
+		// remove_menu_page('edit.php');
+		// remove_menu_page('edit.php?post_type=page');
 		remove_menu_page('themes.php');
 		add_submenu_page( "users.php" , "Role values" , "Role values", 'manage_options', 'role_values', array( $this , 'kvp_role_setting_template' ));
 

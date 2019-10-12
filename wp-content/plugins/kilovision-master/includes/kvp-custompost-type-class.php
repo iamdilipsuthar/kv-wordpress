@@ -37,9 +37,10 @@ class kvp_admin_posttype {
         'public' => true,
         'show_in_rest' => true,
         'label' => 'Orders',
-        'menu_icon' => 'dashicons-networking'
+        'menu_icon' => 'dashicons-networking',
+        
       );
-      register_post_type( 'order', $args );
+      // register_post_type( 'order', $args );
   }
   function register_post_types_tracks() {
       $args = array(

@@ -78,11 +78,12 @@ class KVP {
 		$this->define( 'KVP', 			true );
 		$this->define( 'KVP_VERSION', 	$version );
 		$this->define( 'KVP_PATH', 		$path );
+		$this->define( 'KVP_URL', 		$url );
 		
 		// Include utility functions.
 		include_once( KVP_PATH . 'includes/kvp-custompost-type-class.php');
+		include_once( KVP_PATH . 'includes/kv-removedefault-class.php');
 		if( is_admin() ) {
-			include_once( KVP_PATH . 'includes/kv-removedefault-class.php');
 			include_once( KVP_PATH . 'includes/kv-admin-functions.php');
 			
 		}
