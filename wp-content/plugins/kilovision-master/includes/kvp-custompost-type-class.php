@@ -19,6 +19,8 @@ class kvp_admin_posttype {
       'show_in_rest' => true,
       'label' => 'Beats',
       'menu_icon' => 'dashicons-playlist-audio',
+      'capability_type'     => array('beat','beats'),
+      'map_meta_cap'        => true
     );
     register_post_type( 'beat', $args );
 	}
@@ -28,7 +30,9 @@ class kvp_admin_posttype {
       'public' => true,
       'show_in_rest' => true,
       'label' => 'Events',
-      'menu_icon' => 'dashicons-megaphone'
+      'menu_icon' => 'dashicons-megaphone',
+      'capability_type'     => array('event','events'),
+      'map_meta_cap'        => true
     );
     register_post_type( 'event', $args );
   }
@@ -38,7 +42,8 @@ class kvp_admin_posttype {
         'show_in_rest' => true,
         'label' => 'Orders',
         'menu_icon' => 'dashicons-networking',
-        
+        'capability_type'     => array('order','orders'),
+        'map_meta_cap'        => true,
       );
       // register_post_type( 'order', $args );
   }
@@ -48,6 +53,8 @@ class kvp_admin_posttype {
         'show_in_rest' => true,
         'label' => 'Tracks',
         'menu_icon' => 'dashicons-controls-play',
+        'capability_type'     => array('track','tracks'),
+        'map_meta_cap'        => true,
       );
       register_post_type( 'track', $args );
   }
