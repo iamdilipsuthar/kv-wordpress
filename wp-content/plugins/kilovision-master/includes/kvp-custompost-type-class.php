@@ -9,7 +9,7 @@ class kvp_admin_posttype {
 	
 	function __construct() {
     add_action('init', 			array($this, 'register_post_types_beats'));
-    add_action('init', 			array($this, 'register_post_types_orders'));
+    // add_action('init', 			array($this, 'register_post_types_orders'));
     add_action('init', 			array($this, 'register_post_types_events'));
     add_action('init', 			array($this, 'register_post_types_tracks'));
   }

@@ -54,6 +54,8 @@ define( 'AUTH_SALT',        'XI1!~SQLV}o&yO$3pP:Xzw(buL!$!%{ ~O|,f*p+bbX0zr0z$_c
 define( 'SECURE_AUTH_SALT', ' R?#Q[-LCPwtD{#{eOAAttDTH@|pc?db_Udes[O<(1= iyf}+{|k91OTAENm<i,v' );
 define( 'LOGGED_IN_SALT',   'Mhx5y>RJikdArstMTWdEkmcC_%e}E0mA!~4L(SiAh^fO5D#twttjDu>)`1dfq-ad' );
 define( 'NONCE_SALT',       '*M5a_ZQ:2{x/dTX6^OnS%aLjpAGw^GDDd,;z3x]Ee#!MXR}e{GYjYwB(gE(^^D5L' );
+define('JWT_AUTH_SECRET_KEY', 'kilovision');
+define('JWT_AUTH_CORS_ENABLE', true);
 
 			
 			/**#@-*/
@@ -89,7 +91,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /** Sets up WordPress vars and included files. */
 require_once( ABSPATH . 'wp-settings.php' );
-
 
 
 
