@@ -1,6 +1,6 @@
 <?php
 
-
+// http://nitinsawant.com/timeslotpicker/
 if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 if( ! class_exists('kvp_admin_posttype') ) :
@@ -9,7 +9,7 @@ class kvp_admin_posttype {
 	
 	function __construct() {
     add_action('init', 			array($this, 'register_post_types_beats'));
-    // add_action('init', 			array($this, 'register_post_types_orders'));
+    add_action('init', 			array($this, 'register_post_types_bookings'));
     add_action('init', 			array($this, 'register_post_types_events'));
     add_action('init', 			array($this, 'register_post_types_tracks'));
   }
@@ -20,7 +20,8 @@ class kvp_admin_posttype {
       'label' => 'Beats',
       'menu_icon' => 'dashicons-playlist-audio',
       'capability_type'     => array('beat','beats'),
-      'map_meta_cap'        => true
+      'supports' => array( 'editor', 'title', 'thumbnail', 'comments'),
+      'map_meta_cap'        => true,
     );
     register_post_type( 'beat', $args );
 	}
@@ -32,20 +33,19 @@ class kvp_admin_posttype {
       'label' => 'Events',
       'menu_icon' => 'dashicons-megaphone',
       'capability_type'     => array('event','events'),
-      'map_meta_cap'        => true
+      'map_meta_cap'        => true,
     );
     register_post_type( 'event', $args );
   }
-  function register_post_types_orders() {
+  function register_post_types_bookings() {
       $args = array(
         'public' => true,
+        'label' => 'Bookings',
         'show_in_rest' => true,
-        'label' => 'Orders',
-        'menu_icon' => 'dashicons-networking',
-        'capability_type'     => array('order','orders'),
+        'capability_type'     => array('booking','bookings'),
         'map_meta_cap'        => true,
       );
-      // register_post_type( 'order', $args );
+      register_post_type( 'booking', $args );
   }
   function register_post_types_tracks() {
       $args = array(
@@ -54,6 +54,7 @@ class kvp_admin_posttype {
         'label' => 'Tracks',
         'menu_icon' => 'dashicons-controls-play',
         'capability_type'     => array('track','tracks'),
+        'supports' => array('author', 'editor', 'title', 'thumbnail'),
         'map_meta_cap'        => true,
       );
       register_post_type( 'track', $args );
