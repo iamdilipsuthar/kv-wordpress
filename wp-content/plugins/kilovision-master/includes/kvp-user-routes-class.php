@@ -9,7 +9,9 @@ if( ! class_exists('kvp_user_routes') ) :
 class kvp_user_routes {
 
     private $response;
+    private $members_plans;
     function __construct() {
+        $this->members_plan = array( 'silver_member', 'bronze_member', 'gold_member', 'platinum_member');
         $this->response = array();
         add_action( 'rest_api_init' , array($this, 'wpshout_register_routes') );
     }
@@ -20,6 +22,15 @@ class kvp_user_routes {
         }
     }
     function wpshout_register_routes(){
+        register_rest_route( 
+            'kvp/v1',
+            '/member_plan',
+            array(
+                'methods' => 'GET',
+                'callback' => array($this, 'kvp_member_plan'),
+            )
+        );
+        
         register_rest_route( 
             'kvp/v1',
             '/login',
@@ -101,7 +112,20 @@ class kvp_user_routes {
     //         $auth = isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : false;
     //     }
     // }
-    
+    function kvp_member_plan(){
+        $settings = get_option('option_tree_settings');
+        $return_item = array();
+        $items = $settings['settings'];
+        foreach($items as $item) {
+                if(in_array($item['section'],$this->members_plan)){
+                    $return_item[$item['section']][$item['id']] = $item;
+                }
+        }
+        return new WP_REST_Response( array(
+            'status' => true,
+            'settings' => $return_item 
+        ) , 503);
+    }
     function get_role_cap_text($role){
         $name = strtoupper(str_replace('_', ' ', $role));
         return $name;

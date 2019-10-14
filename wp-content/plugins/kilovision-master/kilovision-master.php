@@ -31,6 +31,7 @@ class KVP {
 		$version = $this->version;
 		$basename = plugin_basename( __FILE__ );
 		$path = plugin_dir_path( __FILE__ );
+		
 		$url = plugin_dir_url( __FILE__ );
 		$slug = dirname($basename);
 		// settings
@@ -94,7 +95,7 @@ class KVP {
 		add_action('init',	array($this, 'init'), 5);
 		
 	}
-
+	
 	function kvp_posttype_role(){
 		// include_once( KVP_PATH . 'includes/kv-postrole-class.php');
 	}
@@ -121,5 +122,6 @@ function kvp() {
 // initialize
 kvp();
 endif; // class_exists check
+
 
 ?>

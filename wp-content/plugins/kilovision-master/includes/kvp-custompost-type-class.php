@@ -17,6 +17,7 @@ class kvp_admin_posttype {
     $args = array(
       'public' => true,
       'show_in_rest' => true,
+      'publicly_queryable' => false,
       'label' => 'Beats',
       'menu_icon' => 'dashicons-playlist-audio',
       'capability_type'     => array('beat','beats'),
@@ -30,6 +31,7 @@ class kvp_admin_posttype {
     $args = array(
       'public' => true,
       'show_in_rest' => true,
+      'publicly_queryable' => false,
       'label' => 'Events',
       'menu_icon' => 'dashicons-megaphone',
       'capability_type'     => array('event','events'),
@@ -42,7 +44,9 @@ class kvp_admin_posttype {
         'public' => true,
         'label' => 'Bookings',
         'show_in_rest' => true,
+        'publicly_queryable' => false,
         'capability_type'     => array('booking','bookings'),
+        'supports' => array('author', 'title'),
         'map_meta_cap'        => true,
       );
       register_post_type( 'booking', $args );
@@ -51,6 +55,7 @@ class kvp_admin_posttype {
       $args = array(
         'public' => true,
         'show_in_rest' => true,
+        'publicly_queryable' => false,
         'label' => 'Tracks',
         'menu_icon' => 'dashicons-controls-play',
         'capability_type'     => array('track','tracks'),

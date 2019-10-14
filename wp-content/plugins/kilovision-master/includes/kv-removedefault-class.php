@@ -6,7 +6,10 @@ if( ! class_exists('kvp_admin') ) :
 
 class kvp_admin {
 	
-	private $options_general;
+	private $options_bronze;
+	private $options_gold;
+	private $options_silver;
+	private $options_platinum;
 	
 	function __construct() {
 
@@ -15,7 +18,11 @@ class kvp_admin {
 		
 		add_action( 'login_enqueue_scripts', array( $this, 'kv_change_admin_logo' ) );
 		add_action( 'login_headerurl', array( $this, 'kv_change_admin_logo_url' ),1,10 );
+		// add_action( 'admin_enqueue_scripts', array( $this, 'kvp_admin_style'));
 		
+	}
+	function kvp_admin_style(){
+		wp_enqueue_style( 'my_custom_style', KVP_URL . 'assets/custom-admin.css', array(), '1.0' );
 	}
 	function kv_change_admin_logo_url($url){
 		return site_url();
@@ -36,58 +43,66 @@ class kvp_admin {
 		// remove_menu_page('edit.php');
 		// remove_menu_page('edit.php?post_type=page');
 		remove_menu_page('themes.php');
-		add_submenu_page( "users.php" , "Role values" , "Role values", 'manage_options', 'role_values', array( $this , 'kvp_role_setting_template' ));
+		add_submenu_page( "users.php" , "Member settings" , "Member settings", 'manage_options', 'member_settings', array( $this , 'kvp_role_setting_template' ));
 
 	}
-	
+	function get_active_tab_cls($active_tab,$tab){
+		return $active_tab == $tab ? 'nav-tab-active' : '' ;
+	}
 	function kvp_role_setting_template() {
-		$this->options_general = get_option( 'kvp_general' );
+		$tab = $_GET['tab'] ? $_GET['tab'] : 'bronze';
+		$this->options_bronze = get_option( 'kvp_bronze' );
+		$this->options_silver = get_option( 'kvp_silver' );
+		$this->options_gold = get_option( 'kvp_gold' );
+		$this->options_platinum = get_option( 'kvp_platinum' );
 		?>
         <div class="wrap">
-            <h1>Role value settings</h1>
+            <h1><?php _e('Member setting values','kilovision'); ?></h1>
             <h2 class="nav-tab-wrapper">
-							<a href="<?php echo admin_url( 'admin.php?page=role_values&tab=general' ); ?>" class="nav-tab nav-tab-active"><?php esc_html_e( 'General' ); ?></a>
+							<a href="<?php echo admin_url( 'admin.php?page=member_settings&tab=bronze' ); ?>" class="nav-tab member-bronze <?php echo $this->get_active_tab_cls($tab, 'bronze'); ?>"><?php esc_html_e( 'Bronze' ); ?></a>
+							<a href="<?php echo admin_url( 'admin.php?page=member_settings&tab=silver' ); ?>" class="nav-tab member-silver <?php echo $this->get_active_tab_cls($tab, 'silver'); ?>"><?php esc_html_e( 'Silver' ); ?></a>
+							<a href="<?php echo admin_url( 'admin.php?page=member_settings&tab=gold' ); ?>" class="nav-tab member-gold <?php echo $this->get_active_tab_cls($tab, 'gold'); ?>"><?php esc_html_e( 'Gold' ); ?></a>
+							<a href="<?php echo admin_url( 'admin.php?page=member_settings&tab=platinum' ); ?>" class="nav-tab member-platinum <?php echo $this->get_active_tab_cls($tab, 'platinum'); ?>"><?php esc_html_e( 'Platinum' ); ?></a>
 						</h2>
-        	 <form method="post" action="options.php"><?php 
-								settings_fields( 'kvp_general' );
-								do_settings_sections( 'kvp-setting-general' );
-								submit_button();
+					 <form method="post" action="options.php"><?php 
+								 
+								 if(isset($tab)){
+									 settings_fields( 'kvp_'.$tab );
+									 do_settings_sections( 'kvp-setting-'.$tab );
+									 submit_button();
+								 }
 							?>
 						</form>
         </div> <?php
 	}
 	public function kv_options_init() { 
+		add_settings_section(
+			'bronze_settings_sec', // ID
+			null, // Title
+			null,
+			'kvp-setting-bronze' // Page
+		); 
+
 		register_setting(
-				'kvp_general', // Option group 
-				'kvp_general', // Option name
+				'kvp_bronze', // Option group 
+				'kvp_bronze', // Option name
 				array( $this, 'sanitize' ) // Sanitize
 		);
-		add_settings_section(
-			'general_settings_sec', // ID
-			'General Settings', // Title
-			array( $this, 'print_section_info' ), // Callback
-			'kvp-setting-general' // Page
-		); 
 		add_settings_field(
-				'logo_image', 
-				'Logo Image', 
-				array( $this, 'logo_image_callback' ), 
-				'kvp-setting-general', // Page
-				'general_settings_sec' // Section id
+			'logo_image', 
+			'Logo Image', 
+			array( $this, 'logo_image_callback' ), 
+			'kvp-setting-bronze', // Page
+			'bronze_settings_sec' // Section id
 		);  
-
-
-	}
-	public function print_section_info(){
-	//your code...
-		echo 'Note';
-		print_r(get_option( 'kvp_general' ));
 		
+	
+
 	}
 	public function logo_image_callback() {
 		printf(
-				'<input type="text" name="kvp_general[logo_image]" id="logo_image" value="%s"> <a href="#" id="logo_image_url" class="button" > Select </a>',
-				isset( $this->options_general['logo_image'] ) ? esc_attr( $this->options_general['logo_image']) : ''
+				'<input type="text" name="kvp_bronze[logo_image]" id="logo_image" value="%s"> <a href="#" id="logo_image_url" class="button" > Select </a>',
+				isset( $this->options_bronze['logo_image'] ) ? esc_attr( $this->options_bronze['logo_image']) : ''
 					);
 	}
 	public function sanitize( $input )  {
