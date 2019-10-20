@@ -37,6 +37,10 @@ define( 'DB_CHARSET', 'utf8mb4' );
 /** The Database Collate type. Don't change this if in doubt. */
 define( 'DB_COLLATE', '' );
 
+
+define('WP_CACHE', false);
+define('WP_AUTO_UPDATE_CORE', false);
+
 /**#@+
  * Authentication Unique Keys and Salts.
  *
@@ -54,6 +58,8 @@ define( 'AUTH_SALT',        'XI1!~SQLV}o&yO$3pP:Xzw(buL!$!%{ ~O|,f*p+bbX0zr0z$_c
 define( 'SECURE_AUTH_SALT', ' R?#Q[-LCPwtD{#{eOAAttDTH@|pc?db_Udes[O<(1= iyf}+{|k91OTAENm<i,v' );
 define( 'LOGGED_IN_SALT',   'Mhx5y>RJikdArstMTWdEkmcC_%e}E0mA!~4L(SiAh^fO5D#twttjDu>)`1dfq-ad' );
 define( 'NONCE_SALT',       '*M5a_ZQ:2{x/dTX6^OnS%aLjpAGw^GDDd,;z3x]Ee#!MXR}e{GYjYwB(gE(^^D5L' );
+
+    
 define('JWT_AUTH_SECRET_KEY', 'kilovision');
 define('JWT_AUTH_CORS_ENABLE', true);
 
@@ -80,7 +86,22 @@ $table_prefix = 'vk';
  *
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
-define( 'WP_DEBUG', false );
+define( 'WP_DEBUG', true );
+// define('WP_DEBUG_DISPLAY', false);
+
+if ( WP_DEBUG ) {
+    // @error_reporting( E_ALL );
+    // @ini_set( 'log_errors', true );
+    // @ini_set( 'log_errors_max_len', '0' );
+
+    // define( 'WP_DEBUG_LOG', true );
+    // define( 'WP_DEBUG_DISPLAY', false );
+    // @ini_set( 'display_errors', 0 );
+    // define( 'CONCATENATE_SCRIPTS', false );
+    // define( 'SAVEQUERIES', true );
+    // define( 'SCRIPT_DEBUG', false );
+}
+
 
 /* That's all, stop editing! Happy publishing. */
 
@@ -93,4 +114,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once( ABSPATH . 'wp-settings.php' );
 
 
+// RewriteCond %{HTTP:Authorization} ^(.*)
+// RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
 
+// SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1

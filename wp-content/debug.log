@@ -1,0 +1,4 @@
+[17-Oct-2019 14:10:07 UTC] PHP Warning:  call_user_func_array() expects parameter 1 to be a valid callback, class 'Deactivate' not found in C:\wamp64\www\kv-wordpress\wp-includes\class-wp-hook.php on line 286
+[17-Oct-2019 14:10:08 UTC] PHP Warning:  call_user_func_array() expects parameter 1 to be a valid callback, class 'Activate' not found in C:\wamp64\www\kv-wordpress\wp-includes\class-wp-hook.php on line 286
+[17-Oct-2019 14:10:09 UTC] PHP Warning:  call_user_func_array() expects parameter 1 to be a valid callback, class 'Deactivate' not found in C:\wamp64\www\kv-wordpress\wp-includes\class-wp-hook.php on line 286
+[17-Oct-2019 14:10:10 UTC] PHP Warning:  call_user_func_array() expects parameter 1 to be a valid callback, class 'Activate' not found in C:\wamp64\www\kv-wordpress\wp-includes\class-wp-hook.php on line 286

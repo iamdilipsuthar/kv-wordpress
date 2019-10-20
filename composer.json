@@ -1,0 +1,9 @@
+{
+    "name": "sandman/kv-wordpress",
+    "type": "project",
+    "license": "Open",
+    "require": {},
+    "autoload": {
+        "psr-4" : ''
+    }
+}

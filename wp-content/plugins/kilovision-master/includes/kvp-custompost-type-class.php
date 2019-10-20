@@ -1,6 +1,6 @@
 <?php
 
-// http://nitinsawant.com/timeslotpicker/
+
 if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 if( ! class_exists('kvp_admin_posttype') ) :
@@ -8,21 +8,17 @@ if( ! class_exists('kvp_admin_posttype') ) :
 class kvp_admin_posttype {
 	
 	function __construct() {
-    add_action('init', 			array($this, 'register_post_types_beats'));
-    add_action('init', 			array($this, 'register_post_types_bookings'));
+    // add_action('init', 			array($this, 'register_post_types_beats'));
+    add_action('init', 			array($this, 'register_post_types_booking'));
     add_action('init', 			array($this, 'register_post_types_events'));
-    add_action('init', 			array($this, 'register_post_types_tracks'));
+    // add_action('init', 			array($this, 'register_post_types_tracks'));
   }
 	function register_post_types_beats() {
     $args = array(
       'public' => true,
       'show_in_rest' => true,
-      'publicly_queryable' => false,
       'label' => 'Beats',
       'menu_icon' => 'dashicons-playlist-audio',
-      'capability_type'     => array('beat','beats'),
-      'supports' => array( 'editor', 'title', 'thumbnail', 'comments'),
-      'map_meta_cap'        => true,
     );
     register_post_type( 'beat', $args );
 	}
@@ -31,23 +27,28 @@ class kvp_admin_posttype {
     $args = array(
       'public' => true,
       'show_in_rest' => true,
-      'publicly_queryable' => false,
-      'label' => 'Events',
-      'menu_icon' => 'dashicons-megaphone',
-      'capability_type'     => array('event','events'),
-      'map_meta_cap'        => true,
+      'label' => 'Event',
+      'labels' => array( 
+                'singular_name' => 'Event',
+                'name' => 'Events',
+                'add_new_item' => 'Add new event'
+              ),
+      'menu_icon' => 'dashicons-megaphone'
     );
     register_post_type( 'event', $args );
   }
-  function register_post_types_bookings() {
+  function register_post_types_booking() {
       $args = array(
         'public' => true,
-        'label' => 'Bookings',
         'show_in_rest' => true,
-        'publicly_queryable' => false,
-        'capability_type'     => array('booking','bookings'),
-        'supports' => array('author', 'title'),
-        'map_meta_cap'        => true,
+        'label' => 'Bookings',
+        'labels' => array( 
+          'singular_name' => 'Booking',
+          'name' => 'Bookings',
+          'add_new_item' => 'Add new booking'
+        ),
+        'supports' => array('title', 'custom-fields', 'author'),
+        'menu_icon' => 'dashicons-networking',
       );
       register_post_type( 'booking', $args );
   }
@@ -55,12 +56,8 @@ class kvp_admin_posttype {
       $args = array(
         'public' => true,
         'show_in_rest' => true,
-        'publicly_queryable' => false,
         'label' => 'Tracks',
         'menu_icon' => 'dashicons-controls-play',
-        'capability_type'     => array('track','tracks'),
-        'supports' => array('author', 'editor', 'title', 'thumbnail'),
-        'map_meta_cap'        => true,
       );
       register_post_type( 'track', $args );
   }

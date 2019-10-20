@@ -1,17 +1,16 @@
 <?php 
+
 use \Firebase\JWT\JWT;
+
 
 if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 if( ! class_exists('kvp_user_routes') ) :
-
-
+    
 class kvp_user_routes {
 
     private $response;
-    private $members_plans;
     function __construct() {
-        $this->members_plan = array( 'silver_member', 'bronze_member', 'gold_member', 'platinum_member');
         $this->response = array();
         add_action( 'rest_api_init' , array($this, 'wpshout_register_routes') );
     }
@@ -21,16 +20,18 @@ class kvp_user_routes {
             return new WP_REST_Response( $this->response, 200);  
         }
     }
+    function kvp_member_plan($role){
+        $settings = get_option('option_tree_settings');
+        $return_item = array();
+        $items = $settings['settings'];
+        foreach($items as $item) {
+                if($item['section'] == $role){
+                    $return_item[$item['section']][$item['id']] = $item;
+                }
+        }
+        return $return_item;
+    }
     function wpshout_register_routes(){
-        register_rest_route( 
-            'kvp/v1',
-            '/member_plan',
-            array(
-                'methods' => 'GET',
-                'callback' => array($this, 'kvp_member_plan'),
-            )
-        );
-        
         register_rest_route( 
             'kvp/v1',
             '/login',
@@ -57,7 +58,7 @@ class kvp_user_routes {
         );
         register_rest_route( 
             'kvp/v1',
-            '/current-user',
+            '/current_user',
             array(
                 'methods' => 'GET',
                 'callback' => array($this, 'kvp_get_current_user'),
@@ -67,72 +68,83 @@ class kvp_user_routes {
             'kvp/v1',
             '/register',
             array(
-                'methods'             => WP_REST_Server::CREATABLE,
+                'methods'=> 'POST',
                 'callback' => array($this, 'kvp_register'),
-                // 'args' => $this->get_endpoint_args_for_item_schema( true )
-                // array(
-                //     'email' => array( 
-                //         'validate_callback' => function($param, $request, $key) {
-                //             return empty($param);
-                //             return is_email( $param );
-                //         }
-                //     ),
-                //     'username' => array( 
-                //         'validate_callback' => function($param, $request, $key) {
-                //             return $param != '' ? true : false;
-                //         }
-                //     ),
-                //     'password' => array( 
-                //         'validate_callback' => function($param, $request, $key) {
-                //             return $param != '' ? true : false;
-                //         }
-                //     )
-                // )
             )
         );
+        
+        register_rest_route( 
+            'kvp/v1',
+            '/social_login',
+            array(
+                'methods' => 'POST',
+                'callback' => array($this, 'kvp_social_login'),
+            )
+        );
+
     }
-    
-    // function get_user($id){
-    //     $user = get_user_by( 'id', $id );
-    //     return array(
-    //         'email' => $user->user_email,
-    //         'display_username' => $user->display_username,
-    //         'role' => $user->roles[0],
-    //         'total_booking'  => 1,
-    //         'total_events'  => 2,
-    //         'total_tracks'  => 3,
-    //         'total_beats'  => 4,
-    //     );
-    // }
-    // function get_token_from_request(){
-    //     $auth = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : false;
-    //     return $auth;
-    //     /* Double check for different auth header string (server dependent) */
-    //     if (!$auth) {
-    //         $auth = isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION']) ? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] : false;
-    //     }
-    // }
-    function kvp_member_plan(){
-        $settings = get_option('option_tree_settings');
-        $return_item = array();
-        $items = $settings['settings'];
-        foreach($items as $item) {
-                if(in_array($item['section'],$this->members_plan)){
-                    $return_item[$item['section']][$item['id']] = $item;
-                }
+    function get_user_login($social_id, $email){
+
+        $flag = array(
+            'email' =>  email_exists($email),
+            'social' =>  username_exists($social_id),
+        );
+        return $flag;
+    }
+    function kvp_social_login($request){
+        $social_id = $request->get_param('social_id');
+        $name = $request->get_param('name');
+        $email = $request->get_param('email');
+        $login_type = $request->get_param('login_type');
+        $avatar = $request->get_param('avatar');
+
+        $user = $this->get_user_login($social_id, $social_id);
+
+        // return $user;
+        if($user['social'] != false){
+            $token = get_user_meta($user['social'], 'access_token', true);
+            $this->response = array(
+                'token' => $token,
+                'success' => true
+            );
+        }elseif($user['email'] != false){
+            $token = get_user_meta($user['email'], 'access_token', true);
+            $this->response = array(
+                'token' => $token,
+                'success' => true
+                            
+            );
+        }else{
+            $user = wp_create_user( $social_id, $social_id , $email );
+            $this->set_default_role($user);
+            $token = $this->get_access_token($social_id, $social_id );
+            add_user_meta($user, 'display_username', $request->get_param('name'));
+            add_user_meta($user, 'access_token', $token);
+            // add_user_meta($user, 'social_id', $social_id);
+            add_user_meta($user, 'login_type', $login_type);
+            add_user_meta($user, 'avatar_url', $avatar);
+            if($token != ''){
+                $this->response = array(
+                    'token' => $token,
+                    'success' => true
+                );
+            }else{
+                $this->response = array(
+                    'token' => 'Access token not found.',
+                    'success' => false
+                );
+            }
         }
-        return new WP_REST_Response( array(
-            'status' => true,
-            'settings' => $return_item 
-        ) , 503);
+        return new WP_REST_Response( $this->response , 200);  
+    }
+    function get_user_social_id($id){
+       return username_exists($id);
     }
     function get_role_cap_text($role){
         $name = strtoupper(str_replace('_', ' ', $role));
         return $name;
     }
-    
-    public function validate_token($output = true)
-    {
+    public function validate_token($output = true){
         /*
          * Looking for the HTTP_AUTHORIZATION header, if not present just
          * return the user.
@@ -242,6 +254,21 @@ class kvp_user_routes {
             'email' => $user->user_email,
             'display_username' => $user->display_username,
             'role' => $this->kvp_get_user_role($id),
+            'avatar' =>get_user_meta($id, 'avatar_url' ,true),
+            'total_booking'  => 1,
+            'total_events'  => 2,
+            'total_tracks'  => 3,
+            'total_beats'  => 4,
+        );
+
+        return $user_obj;
+    }
+    function get_user_by_social_id($id){
+        // $user = get_user_by( '', $id);
+        $user_obj = array(
+            'email' => $user->user_email,
+            'display_username' => $user->display_username,
+            'role' => $this->kvp_get_user_role($id),
             'total_booking'  => 1,
             'total_events'  => 2,
             'total_tracks'  => 3,
@@ -251,8 +278,12 @@ class kvp_user_routes {
         return $user_obj;
     }
     function kvp_get_current_user(){
+        
+        // $member = new Members();
+        // return $member->get_current_user_plan();
 
         $token = $this->validate_token(false);
+        // return $token;
         if (is_wp_error($token)) {
             if ($token->get_error_code() == 'jwt_auth_no_auth_header') {
                 /** If there is a error, store it to show it after see rest_pre_dispatch */
@@ -271,8 +302,29 @@ class kvp_user_routes {
                 return new WP_REST_Response( $this->jwt_error , 200);  
             }
         }
+        
         /** Everything is ok, return the user ID stored in the token*/
         
+    }
+    function get_nopass_token($user){
+        $issuedAt = time();
+        $notBefore = apply_filters('jwt_auth_not_before', $issuedAt, $issuedAt);
+        $expire = apply_filters('jwt_auth_expire', $issuedAt + (DAY_IN_SECONDS * 7), $issuedAt);
+        $token = array(
+            'iss' => get_bloginfo('url'),
+            'iat' => $issuedAt,
+            'nbf' => $notBefore,
+            'exp' => $expire,
+            'data' => array(
+                'user' => array(
+                    'id' => $user,
+                ),
+            ),
+        );
+
+        /** Let the user modify the token data before the sign. */
+        $token = JWT::encode(apply_filters('jwt_auth_token_before_sign', $token, $user), $secret_key);
+        return $token;
     }
     function set_default_role($id){
         $user = new WP_User($id);
@@ -384,6 +436,8 @@ class kvp_user_routes {
         // }
         // return new WP_REST_Response( $this->response, 200);  
     }
+    
+    
 }
 
 $kvp_user_routes = new kvp_user_routes();
