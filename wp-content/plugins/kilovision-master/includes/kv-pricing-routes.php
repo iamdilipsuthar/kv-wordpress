@@ -14,7 +14,7 @@ class kvp_pricing_routes extends kvp_user_routes{
     function kvp_pricing_routes(){
         register_rest_route( 
             'kvp/v1',
-            '/general_pricing',
+            '/pricing',
             array(
                 'methods' => 'GET',
                 'callback' => array($this, 'kvp_general_pricing'),
@@ -26,7 +26,7 @@ class kvp_pricing_routes extends kvp_user_routes{
 		$new_list = array();
 		foreach($options as $key => $value){
 			if (strpos($key, "kvp_$match") !== false) {
-				$new_list[$key] = unserialize($value);
+				$new_list[str_replace($match."_","",$key)] = $value;
 			}
 		}
 		return $new_list;
@@ -75,7 +75,10 @@ class kvp_pricing_routes extends kvp_user_routes{
             $this->response = array($pricing);
             
         }else{
-            $this->response = array(null);
+            $this->response = array(
+                'success' => false,
+                'messsage' => __('You are Non-member user.', 'kilovision')
+            );
             
         }
         return new WP_REST_Response($this->response , 200);  

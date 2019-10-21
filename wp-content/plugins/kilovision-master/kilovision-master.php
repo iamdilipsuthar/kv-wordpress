@@ -34,10 +34,11 @@ class Kvpmain {
 	{
 		$plugin = new Kvp\Jwtauth();
 		$plugin->run();
+		
+	
 	}
 	function __construct() { 
 		register_activation_hook(__FILE__, array($this, 'kvp_posttype_role'));
-		
 		// add_action( 'init' , array($this, 'kvp_posttype_role'));
 	}
 

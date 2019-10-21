@@ -40,8 +40,12 @@ class kvp_admin_posttype {
   function register_post_types_booking() {
       $args = array(
         'public' => true,
-        'show_in_rest' => true,
+        'show_in_rest' => false,
         'label' => 'Bookings',
+        'show_in_nav_menus' => false,
+        'show_in_menu' => false,
+        'show_ui' => false,
+        'show_in_admin_bar' => false,
         'labels' => array( 
           'singular_name' => 'Booking',
           'name' => 'Bookings',
